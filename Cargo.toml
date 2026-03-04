@@ -1,0 +1,47 @@
+[package]
+name = "foreman"
+version = "0.1.0"
+edition = "2021"
+description = "A mini Celery-style async task queue built with Tokio and Axum"
+
+[dependencies]
+# Async runtime — "full" enables all features including time, net, sync
+tokio = { version = "1", features = ["full"] }
+
+# Ergonomic async HTTP framework built on top of Hyper and Tower
+axum = "0.7"
+
+# Serialization/deserialization — JSON payloads for jobs
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# UUID v4 for unique job IDs. "serde" feature adds Serialize/Deserialize.
+uuid = { version = "1", features = ["v4", "serde"] }
+
+# Concurrent HashMap — lets multiple threads read/write the job store
+# without wrapping the whole thing in a Mutex<HashMap>
+dashmap = "5"
+
+# HTTP middleware layer (tracing/logging)
+tower-http = { version = "0.5", features = ["trace"] }
+
+# Structured logging — zero cost when not enabled at runtime
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[dev-dependencies]
+# Tower's ServiceExt gives us `.oneshot()` for testing axum handlers
+tower = { version = "0.4", features = ["util"] }
+
+# Benchmarking with async support
+criterion = { version = "0.5", features = ["async_tokio"] }
+
+# Needed to read HTTP response bodies in integration tests
+http-body-util = "0.1"
+
+# Full tokio features for test helpers
+tokio = { version = "1", features = ["full"] }
+
+[[bench]]
+name = "throughput"
+harness = false
